@@ -1,0 +1,62 @@
+
+<div class="stack as-search-wrapper" role="main">
+    <div class="as-navtuck-wrapper">
+        <div class="as-l-fullwidth  as-navtuck" data-events="event52">
+            <div class="pd-billboard pd-category-header">
+                <div class="pd-l-plate-scale">
+                    <div class="pd-billboard-background">
+                        <img src="./assets/music-audio-alp-201709" alt="" width="1440" height="320" data-scale-params-2="wid=2880&amp;hei=640&amp;fmt=jpeg&amp;qlt=95&amp;op_usm=0.5,0.5&amp;.v=1503948581306" class="pd-billboard-hero ir">
+                    </div>
+                    <div class="pd-billboard-info">
+                        <h1 class="pd-billboard-header pd-util-compact-small-18">Loja e-commerce</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div style="height: 77px;">
+            <h2>
+                Smartphones
+            </h2>
+        </div>
+        <div style="white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
+            <div style="display: inline-block">
+                <img id="product-img" src="{{img}}" style="width: 400px;">
+            </div>
+            <div style="display: inline-block">
+                <img id="product-img" src="./assets/qr_caja.png" style="width: 400px;">
+            </div>
+            <div style="display: inline-block; white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
+                <div class="as-producttile-info col-4">
+                    <h2>{{title}}</h2>
+                    <h3>{{price}}</h3>
+                    <h3>{{unit}}</h3>
+                    <h2 id="order_status"></h2>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+<script>
+    (function() {
+        var poll_url = "{{api_baseurl}}/status?external_reference={{external_reference}}";
+        var poll = function() {
+            $.ajax({
+                url: poll_url,
+                dataType: 'json',
+                type: 'get',
+                success: function(data) {
+                    if ( data.status ) {
+                        $('#order_status').text('Estado de la orden: '+data.status);
+                        if(data.status === 'closed') {
+                            clearInterval(pollInterval);
+                        }
+                    }
+                }
+            });
+        };
+        var pollInterval = setInterval( function() { poll(); }, 3000);
+        poll();
+    })();
+</script>
