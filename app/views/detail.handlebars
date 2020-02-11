@@ -39,6 +39,7 @@
     </div>
 </div>
 <script>
+    // Simple polling function to display any order status update.
     (function() {
         var poll_url = "{{api_baseurl}}/status?external_reference={{external_reference}}";
         var poll = function() {
