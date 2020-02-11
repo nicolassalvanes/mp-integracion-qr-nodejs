@@ -14,7 +14,6 @@ var db = [];
 const ACCESS_TOKEN = properties.get('access_token'),
       USER_ID = properties.get('user_id'),
       POS_ID = properties.get('pos_id'),
-      NOTIFICATION_CALLBACK_URL = properties.get('notification_callback_url'),
       MP_ORDER_URL = properties.get('mp_order_basepath')+USER_ID+'/'+POS_ID+'?access_token='+ACCESS_TOKEN,
       MP_MERCHANT_URL = properties.get('mp_merchant_basepath')+'%d?access_token='+ACCESS_TOKEN;
 
@@ -30,13 +29,14 @@ router.post('/order', (req, res) => {
         method: "POST",
         json: true,
         body: {
-            "notification_url": NOTIFICATION_CALLBACK_URL,
+            "notification_url": req.protocol+'://'+req.get('host')+'/api/notification',
             "external_reference": externalReference,
             "items": [{
                 "title": req.body.title,
                 "currency_id": "ARS",
                 "unit_price": req.body.unit_price,
-                "quantity": req.body.quantity
+                "quantity": req.body.quantity,
+                "picture_url": req.body.picture_url
             }]
         }
     }

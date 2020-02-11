@@ -15,18 +15,19 @@ router.get('/', function (req, res) {
  */
 router.post('/detail', function (req, res) {
 
-    const api_baseurl = req.protocol+'://'+req.get('host')+'/api';
+    const baseurl = req.protocol+'://'+req.get('host');
 
     var data = req.body;
 
     var options = {
-        uri: api_baseurl+'/order',
+        uri: baseurl+'/api/order',
         method: "POST",
         json: true,
         body: {
             "title": data.title,
             "unit_price": data.price,
-            "quantity": data.unit
+            "quantity": data.unit,
+            "picture_url": baseurl+data.img
         }
     }
 	
@@ -37,7 +38,7 @@ router.post('/detail', function (req, res) {
 
         } else {
             data.external_reference = response.body.order.external_reference;
-            data.api_baseurl = api_baseurl;
+            data.baseurl = baseurl;
 
             res.render('detail', data);
         }
