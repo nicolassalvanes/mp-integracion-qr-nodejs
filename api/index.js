@@ -3,7 +3,7 @@ const request = require('request');
 const uuidv1 = require('uuid/v1');
 const util = require('util');
 const propertiesReader = require('properties-reader');
-const properties = propertiesReader('./api/config/properties.conf');
+const properties = propertiesReader('./config/properties.conf');
 
 /**
  * In-memory "database" for storing each order status by his external reference id
@@ -44,7 +44,9 @@ router.post('/order', (req, res) => {
     request(options, function(err, response, body) {
 
         if (err || response.statusCode !== 200) {
-            return res.status(500).json({ "error": err });
+            console.log(err);
+            console.log(response.body);
+            return res.sendStatus(500);
 
         } else {
             db[externalReference] = 'unknown';
@@ -72,6 +74,7 @@ router.post('/notification', (req, res) => {
 
             if (err || response.statusCode !== 200) {
                 console.log(err);
+                console.log(response.body);
 
             } else {
                 var order = JSON.parse(response.body);

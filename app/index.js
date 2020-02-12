@@ -1,6 +1,9 @@
 const router = require('express').Router();
-
 const request = require('request');
+const propertiesReader = require('properties-reader');
+const properties = propertiesReader('./config/properties.conf');
+
+const POS_QR_URL = properties.get('pos_qr_url');
 
 /**
  * Store home page: displays all available items.
@@ -39,6 +42,7 @@ router.post('/detail', function (req, res) {
         } else {
             data.external_reference = response.body.order.external_reference;
             data.baseurl = baseurl;
+            data.qr_img = POS_QR_URL;
 
             res.render('detail', data);
         }
