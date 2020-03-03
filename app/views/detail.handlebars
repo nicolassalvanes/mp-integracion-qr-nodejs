@@ -1,46 +1,40 @@
-
-<div class="stack as-search-wrapper" role="main">
-    <div class="as-navtuck-wrapper">
-        <div class="as-l-fullwidth  as-navtuck" data-events="event52">
-            <div class="pd-billboard pd-category-header">
-                <div class="pd-l-plate-scale">
-                    <div class="pd-billboard-background">
-                        <img src="/assets/music-audio-alp-201709" alt="" width="1440" height="320" data-scale-params-2="wid=2880&amp;hei=640&amp;fmt=jpeg&amp;qlt=95&amp;op_usm=0.5,0.5&amp;.v=1503948581306" class="pd-billboard-hero ir">
-                    </div>
-                    <div class="pd-billboard-info">
-                        <h1 class="pd-billboard-header pd-util-compact-small-18">Loja e-commerce</h1>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="row m-0">
+    <div class="col-lg-6 left-side-product-box pb-3">
+        <img src="{{img}}" class="border p-3">
     </div>
-    <div>
-        <div style="height: 77px;">
-            <h2>
-                Smartphones
-            </h2>
-        </div>
-        <div style="white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
-            <div style="display: inline-block">
-                <img src="{{img}}" style="width: 400px;">
-            </div>
-            <div style="display: inline-block">
-                <img src="{{qr_img}}" style="width: 400px;">
-            </div>
-            <div style="display: inline-block; white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
-                <div class="as-producttile-info col-4">
-                    <h2>{{title}}</h2>
-                    <h3>${{price}}</h3>
-                    <h3>Unidades: {{unit}}</h3>
-                    <button id="create_button" onclick="createOrder()" class="mercadopago-button-create">Generar Orden</button>
-                    <button hidden id="cancel_button" onclick="cancelOrder()" class="mercadopago-button-cancel">Cancelar Orden</button>
-                    <h3 id="order_status"></h3>
-                    <input hidden id="external_reference_id"></input>
+    <div class="col-lg-6">
+        <div class="right-side-pro-detail border p-3 m-0">
+            <div class="row">
+                <div class="col-lg-12">
+                    <p class="m-0 p-0">{{title}}</p>
                 </div>
-            </div>  
+                <div class="col-lg-12">
+                    <p class="m-0 p-0 price-pro">$ {{price}}</p>
+                    <hr class="p-0 m-0">
+                </div>
+                <div class="col-lg-3">
+                    <br><h6>Cantidad :</h6>
+                    <input id="product_quantity" type="number" class="form-control text-center w-100" value="1">
+                </div>
+                <div class="col-lg-12 mt-3">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <button id="create_button" onclick="createOrder()" class="mercadopago-button-create">Generar Orden</button>
+                            <button hidden id="cancel_button" onclick="cancelOrder()" class="mercadopago-button-cancel">Cancelar Orden</button>
+                            <br><br>
+                            <h5 id="order_status"></h5>
+                            <hr>
+                            <img src="{{qr_img}}" class="border p-3" style="width: 80%;">
+                            <br><br>
+                            <input hidden id="external_reference_id"></input>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 <script>
     function getExternalReferenceId() {
         return document.getElementById('external_reference_id');
@@ -54,7 +48,8 @@
             type: 'get',
             success: function(data) {
                 if ( data.status ) {
-                    document.getElementById('order_status').innerHTML = 'Estado de la orden: '+data.status;
+                    var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
+                    document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
                     if(data.status === 'closed') {
                         clearInterval(pollInterval);
                     }
@@ -69,11 +64,13 @@
     var orderData = {
         title: "{{title}}",
         unit_price: {{price}},
-        quantity: {{unit}},
         picture_url: "{{img}}"
     }
 
     function createOrder() {
+
+        orderData.quantity = document.getElementById('product_quantity').value;
+
         $.ajax({
             url: "{{baseurl}}/api/order",
             type: 'post',
