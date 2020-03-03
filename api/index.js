@@ -24,13 +24,14 @@ const ACCESS_TOKEN = properties.get('access_token'),
 router.post('/order', (req, res) => {
     
     var externalReference = POS_ID+'-'+uuidv1();
+    var basePath = req.protocol+'://'+req.get('host');
 
     var options = {
         uri: MP_ORDER_URL,
         method: "POST",
         json: true,
         body: {
-            "notification_url": req.protocol+'://'+req.get('host')+'/api/notification',
+            "notification_url": basePath+'/api/notification',
             //"notification_url": "https://workshopqr.requestcatcher.com/test",
             "external_reference": externalReference,
             "items": [{
@@ -38,7 +39,7 @@ router.post('/order', (req, res) => {
                 "currency_id": CURRENCY_ID,
                 "unit_price": req.body.unit_price,
                 "quantity": req.body.quantity,
-                "picture_url": req.body.picture_url
+                "picture_url": basePath+req.body.picture_url
             }]
         }
     }

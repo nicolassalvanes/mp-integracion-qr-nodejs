@@ -76,3 +76,34 @@
 .right-side-pro-detail .price-pro{
 	color:green;
 }
+
+.header-container {
+    background: #F2F2F2; 
+    width: 100%
+}
+.header-container img {
+    height: 200px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.mp-button {
+    padding: 0 1.7142857142857142em;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.875em;
+    line-height: 2.7142857142857144;
+    background: #009ee3;
+    border-radius: 0.2857142857142857em;
+    color: #fff;
+    cursor: pointer;
+    border: 0;
+}
+
+.mp-button-create {
+    background: green;
+}
+
+.mp-button-cancel {
+    background: red;
+}
