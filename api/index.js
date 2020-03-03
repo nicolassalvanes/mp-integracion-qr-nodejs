@@ -30,8 +30,8 @@ router.post('/order', (req, res) => {
         method: "POST",
         json: true,
         body: {
-            //"notification_url": req.protocol+'://'+req.get('host')+'/api/notification',
-            "notification_url": "https://workshopqr.requestcatcher.com/test",
+            "notification_url": req.protocol+'://'+req.get('host')+'/api/notification',
+            //"notification_url": "https://workshopqr.requestcatcher.com/test",
             "external_reference": externalReference,
             "items": [{
                 "title": req.body.title,
