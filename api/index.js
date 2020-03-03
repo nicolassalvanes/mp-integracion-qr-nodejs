@@ -15,7 +15,8 @@ const ACCESS_TOKEN = properties.get('access_token'),
       USER_ID = properties.get('user_id'),
       POS_ID = properties.get('pos_id'),
       MP_ORDER_URL = properties.get('mp_order_basepath')+USER_ID+'/'+POS_ID+'?access_token='+ACCESS_TOKEN,
-      MP_MERCHANT_URL = properties.get('mp_merchant_basepath')+'%d?access_token='+ACCESS_TOKEN;
+      MP_MERCHANT_URL = properties.get('mp_merchant_basepath')+'%d?access_token='+ACCESS_TOKEN,
+      CURRENCY_ID = properties.get('currency_id');
 
 /**
  * This resource creates an instore order for item payment
@@ -33,7 +34,7 @@ router.post('/order', (req, res) => {
             "external_reference": externalReference,
             "items": [{
                 "title": req.body.title,
-                "currency_id": "ARS",
+                "currency_id": CURRENCY_ID,
                 "unit_price": req.body.unit_price,
                 "quantity": req.body.quantity,
                 "picture_url": req.body.picture_url
@@ -51,9 +52,27 @@ router.post('/order', (req, res) => {
         } else {
             db[externalReference] = 'unknown';
 
-            return res.status(200).json({
+            return res.status(201).json({
                 "order": response.body
             });
+        }
+    });
+});
+
+/**
+ * This resource cancel an instore order
+ */
+router.delete('/order', (req, res) => {
+
+    request.delete(MP_ORDER_URL, function(err, response, body) {
+
+        if (err || (response.statusCode !== 204 && response.statusCode !== 200)) {
+            console.log(err);
+            console.log(response.body);
+            return res.sendStatus(500);
+
+        } else {
+            return res.sendStatus(204);
         }
     });
 });

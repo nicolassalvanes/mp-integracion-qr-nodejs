@@ -1,0 +1,19 @@
+.as-filter-button-text {
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+}
+
+.row.as-fixed-nav {
+    border-bottom: 1px solid #ddd;
+}
+
+.as-producttile-tilehero.with-paddlenav.with-paddlenav-onhover {
+    height: 330px;
+}
+
+.as-footnotes {
+    background: #333;
+    color: #fff;
+    padding: 16px 40px;
+}

@@ -22,42 +22,93 @@
         </div>
         <div style="white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
             <div style="display: inline-block">
-                <img id="product-img" src="{{img}}" style="width: 400px;">
+                <img src="{{img}}" style="width: 400px;">
             </div>
             <div style="display: inline-block">
-                <img id="product-img" src="{{qr_img}}" style="width: 400px;">
+                <img src="{{qr_img}}" style="width: 400px;">
             </div>
             <div style="display: inline-block; white-space: nowrap; overflow-x: auto; overflow-y: hidden;">
                 <div class="as-producttile-info col-4">
                     <h2>{{title}}</h2>
-                    <h3>{{price}}</h3>
-                    <h3>{{unit}}</h3>
-                    <h2 id="order_status"></h2>
+                    <h3>${{price}}</h3>
+                    <h3>Unidades: {{unit}}</h3>
+                    <button id="create_button" onclick="createOrder()" class="mercadopago-button-create">Generar Orden</button>
+                    <button hidden id="cancel_button" onclick="cancelOrder()" class="mercadopago-button-cancel">Cancelar Orden</button>
+                    <h3 id="order_status"></h3>
+                    <input hidden id="external_reference_id"></input>
                 </div>
             </div>  
         </div>
     </div>
 </div>
 <script>
+    function getExternalReferenceId() {
+        return document.getElementById('external_reference_id');
+    }
     // Simple polling function to display any order status update.
-    (function() {
-        var poll_url = "{{baseurl}}/api/status?external_reference={{external_reference}}";
-        var poll = function() {
-            $.ajax({
-                url: poll_url,
-                dataType: 'json',
-                type: 'get',
-                success: function(data) {
-                    if ( data.status ) {
-                        $('#order_status').text('Estado de la orden: '+data.status);
-                        if(data.status === 'closed') {
-                            clearInterval(pollInterval);
-                        }
+    var pollInterval = undefined;
+    var poll = function() {
+        $.ajax({
+            url: "{{baseurl}}/api/status?external_reference="+getExternalReferenceId().value,
+            dataType: 'json',
+            type: 'get',
+            success: function(data) {
+                if ( data.status ) {
+                    document.getElementById('order_status').innerHTML = 'Estado de la orden: '+data.status;
+                    if(data.status === 'closed') {
+                        clearInterval(pollInterval);
                     }
                 }
-            });
-        };
-        var pollInterval = setInterval( function() { poll(); }, 3000);
-        poll();
-    })();
+            },
+            error: function (data) {
+                console.log('Error:', data);
+            }
+        });
+    };
+
+    var orderData = {
+        title: "{{title}}",
+        unit_price: {{price}},
+        quantity: {{unit}},
+        picture_url: "{{img}}"
+    }
+
+    function createOrder() {
+        $.ajax({
+            url: "{{baseurl}}/api/order",
+            type: 'post',
+            contentType: 'application/json',
+            dataType: 'json', 
+            data: JSON.stringify(orderData),
+            success: function(data) {
+                if ( data.order.external_reference ) {
+                    getExternalReferenceId().value = data.order.external_reference;
+                    document.getElementById('create_button').setAttribute('hidden', false);
+                    document.getElementById('cancel_button').removeAttribute('hidden');
+                    pollInterval = setInterval( function() { poll(); }, 3000);
+                    poll();
+                }
+            },
+            error: function (data) {
+                console.log('Error:', data);
+            }
+        });
+    }
+
+    function cancelOrder() {
+        $.ajax({
+            url: "{{baseurl}}/api/order",
+            type: 'delete',
+            success: function(data) {
+                getExternalReferenceId().value = "";
+                document.getElementById('cancel_button').setAttribute('hidden', false);
+                document.getElementById('create_button').removeAttribute('hidden');
+                document.getElementById('order_status').innerHTML = "";
+                clearInterval(pollInterval);
+            },
+            error: function (data) {
+                console.log('Error:', data);
+            }
+        });
+    }
 </script>
