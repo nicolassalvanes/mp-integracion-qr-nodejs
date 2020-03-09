@@ -6,7 +6,7 @@ const propertiesReader = require('properties-reader');
 const properties = propertiesReader('./config/properties.conf');
 
 /**
- * In-memory "database" for storing each order status by his external reference id
+ * In-memory "database" for storing each order status by his external reference id.
  * (Real database implementation required on production)
  */
 var db = [];
@@ -23,16 +23,15 @@ const ACCESS_TOKEN = properties.get('access_token'),
  */
 router.post('/order', (req, res) => {
     
-    var externalReference = POS_ID+'-'+uuidv1();
-    var basePath = req.protocol+'://'+req.get('host');
+    const externalReference = POS_ID+'-'+uuidv1();
+    const basePath = req.protocol+'://'+req.get('host');
 
-    var options = {
+    let options = {
         uri: MP_ORDER_URL,
         method: "POST",
         json: true,
         body: {
             "notification_url": basePath+'/api/notification',
-            //"notification_url": "https://workshopqr.requestcatcher.com/test",
             "external_reference": externalReference,
             "items": [{
                 "title": req.body.title,
@@ -84,9 +83,9 @@ router.delete('/order', (req, res) => {
  */
 router.post('/notification', (req, res) => {
     if(req.query.topic === 'merchant_order'){
-        var id = req.query.id;
+        const id = req.query.id;
 
-        var options = {
+        let options = {
             uri: util.format(MP_MERCHANT_URL, id),
             method: "GET"
         }
@@ -98,7 +97,7 @@ router.post('/notification', (req, res) => {
                 console.log(response.body);
 
             } else {
-                var order = JSON.parse(response.body);
+                const order = JSON.parse(response.body);
                 db[order.external_reference] = order.status;
             }
         });
@@ -110,7 +109,7 @@ router.post('/notification', (req, res) => {
  * This resource returns an order last known status
  */
 router.get('/status', (req, res) => {
-    var externalReference = req.query.external_reference;
+    const externalReference = req.query.external_reference;
 
     return res.status(200).json({
         "status": externalReference in db ? db[externalReference] : 'unknown'

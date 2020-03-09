@@ -16,7 +16,7 @@ router.get('/', function (req, res) {
  */
 router.post('/detail', function (req, res) {
 
-    var data = req.body;
+    let data = req.body;
 
     data.baseurl = req.protocol+'://'+req.get('host');
     data.qr_img = POS_QR_URL;
