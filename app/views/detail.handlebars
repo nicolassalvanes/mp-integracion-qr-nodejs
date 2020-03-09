@@ -22,11 +22,11 @@
                             <button id="create_button" onclick="createOrder()" class="mp-button mp-button-create">Generar Orden</button>
                             <button hidden id="cancel_button" onclick="cancelOrder()" class="mp-button mp-button-cancel">Cancelar Orden</button>
                             <br><br>
-                            <h5 id="order_status"></h5>
+                            <h5 id="order_status"></h5><!--Actualice aquí el estado de la órden-->
                             <hr>
-                            <img src="{{qr_img}}" class="border p-3" style="width: 80%;">
+                            <img src="" class="border p-3" style="width: 80%;"><!--Completar src con URL de imagen de tu QR de pago-->
                             <br><br>
-                            <input hidden id="external_reference_id"></input>
+                            <input hidden id="external_reference_id"></input><!--Se sugiere guardar aquí el id de la órden generada-->
                         </div>
                     </div>
                 </div>
@@ -36,26 +36,15 @@
 </div>
 
 <script>
-    function getExternalReferenceId() {
-        return document.getElementById('external_reference_id');
-    }
-    // Polling function to display any order status update.
+    // Se sugiere utilizar esta función sencilla para hacer polling al backend y actualizar el estado de la órden.
     var pollInterval = undefined;
     var poll = function() {
         $.ajax({
-            url: "{{baseurl}}/api/status?external_reference="+getExternalReferenceId().value,
+            url: "", //Completar endpoint de backend para obtener el estado actual de la órden
             dataType: 'json',
             type: 'get',
             success: function(data) {
-                if ( data.status ) {
-                    var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
-                    document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
-                    if(data.status === 'closed') {
-                        document.getElementById('cancel_button').setAttribute('hidden', false);
-                        document.getElementById('create_button').removeAttribute('hidden');
-                        clearInterval(pollInterval);
-                    }
-                }
+                //Actualizar estado actual
             },
             error: function (data) {
                 console.log('Error:', data);
@@ -63,51 +52,21 @@
         });
     };
 
-    var orderData = {
-        title: "{{title}}",
-        unit_price: {{price}},
-        picture_url: "{{img}}"
-    }
-
     function createOrder() {
+        //Invocar aquí al backend para crear la orden 
 
-        orderData.quantity = document.getElementById('product_quantity').value;
 
-        $.ajax({
-            url: "{{baseurl}}/api/order",
-            type: 'post',
-            contentType: 'application/json',
-            dataType: 'json', 
-            data: JSON.stringify(orderData),
-            success: function(data) {
-                if ( data.order.external_reference ) {
-                    getExternalReferenceId().value = data.order.external_reference;
-                    document.getElementById('create_button').setAttribute('hidden', false);
-                    document.getElementById('cancel_button').removeAttribute('hidden');
-                    pollInterval = setInterval( function() { poll(); }, 3000);
-                    poll();
-                }
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
+        /** Aclaración:
+            Luego de crear exitosamente una órden de pago, colocar las siguientes líneas para iniciar el polling periódico al backend:
+
+            pollInterval = setInterval( function() { poll(); }, 1000);
+            poll();
+        **/
     }
-
+ 
     function cancelOrder() {
-        $.ajax({
-            url: "{{baseurl}}/api/order",
-            type: 'delete',
-            success: function(data) {
-                getExternalReferenceId().value = "";
-                document.getElementById('cancel_button').setAttribute('hidden', false);
-                document.getElementById('create_button').removeAttribute('hidden');
-                document.getElementById('order_status').innerHTML = "";
-                clearInterval(pollInterval);
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
+        //Invocar aquí al backend para cancelar la orden
+
     }
+
 </script>

@@ -1,25 +1,21 @@
 const router = require('express').Router();
-const propertiesReader = require('properties-reader');
-const properties = propertiesReader('./config/properties.conf');
-
-const POS_QR_URL = properties.get('pos_qr_url');
 
 /**
- * Store home page: displays all available items.
+ * Home page: muestra todos los ítems disponibles para comprar
  */
 router.get('/', function (req, res) {
     res.render('home');
 });
 
 /**
- * Item detail page: displays selected item info and allows to create an order and pay
+ * Detail page: muestra la información del ítem seleccionado y permite crear la órden de pago
  */
 router.post('/detail', function (req, res) {
 
     let data = req.body;
 
+    //Base URL para correcta comunicación con el backend desde el frontend
     data.baseurl = req.protocol+'://'+req.get('host');
-    data.qr_img = POS_QR_URL;
 
     res.render('detail', data);
 });
