@@ -26,7 +26,6 @@
                             <hr>
                             <img src="{{qr_img}}" class="border p-3" style="width: 80%;">
                             <br><br>
-                            <input hidden id="external_reference_id"></input>
                         </div>
                     </div>
                 </div>
@@ -36,32 +35,38 @@
 </div>
 
 <script>
-    function getExternalReferenceId() {
-        return document.getElementById('external_reference_id');
-    }
     // Polling function to display any order status update.
     var pollInterval = undefined;
-    var poll = function() {
-        $.ajax({
-            url: "{{baseurl}}/api/status?external_reference="+getExternalReferenceId().value,
-            dataType: 'json',
-            type: 'get',
-            success: function(data) {
-                if ( data.status ) {
-                    var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
-                    document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
-                    if(data.status === 'closed') {
-                        document.getElementById('cancel_button').setAttribute('hidden', false);
-                        document.getElementById('create_button').removeAttribute('hidden');
-                        clearInterval(pollInterval);
+
+    function startStatusPolling(externalReferenceId) {
+        pollInterval = setInterval( 
+            function() { 
+                $.ajax({
+                    url: "{{baseurl}}/api/status?external_reference="+externalReferenceId,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        if ( data.status ) {
+                            var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
+                            document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
+                            if(data.status === 'closed') {
+                                document.getElementById('cancel_button').setAttribute('hidden', false);
+                                document.getElementById('create_button').removeAttribute('hidden');
+                                clearInterval(pollInterval);
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
                     }
-                }
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
+                });
+            }, 
+            3000
+        );
     };
+    function stopStatusPolling(){
+        clearInterval(pollInterval);
+    }
 
     var orderData = {
         title: "{{title}}",
@@ -81,11 +86,9 @@
             data: JSON.stringify(orderData),
             success: function(data) {
                 if ( data.order.external_reference ) {
-                    getExternalReferenceId().value = data.order.external_reference;
                     document.getElementById('create_button').setAttribute('hidden', false);
                     document.getElementById('cancel_button').removeAttribute('hidden');
-                    pollInterval = setInterval( function() { poll(); }, 3000);
-                    poll();
+                    startStatusPolling(data.order.external_reference);
                 }
             },
             error: function (data) {
@@ -99,11 +102,10 @@
             url: "{{baseurl}}/api/order",
             type: 'delete',
             success: function(data) {
-                getExternalReferenceId().value = "";
                 document.getElementById('cancel_button').setAttribute('hidden', false);
                 document.getElementById('create_button').removeAttribute('hidden');
                 document.getElementById('order_status').innerHTML = "";
-                clearInterval(pollInterval);
+                stopStatusPolling();
             },
             error: function (data) {
                 console.log('Error:', data);
