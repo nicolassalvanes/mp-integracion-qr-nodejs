@@ -51,16 +51,17 @@
             }
         });
     };
+    function startPolling(){
+        pollInterval = setInterval( function() { poll(); }, 1000);
+        poll();
+    }
 
     function createOrder() {
         //Invocar aquí al backend para crear la orden 
 
 
         /** Aclaración:
-            Luego de crear exitosamente una órden de pago, colocar las siguientes líneas para iniciar el polling periódico al backend:
-
-            pollInterval = setInterval( function() { poll(); }, 1000);
-            poll();
+            Luego de crear exitosamente una órden de pago, invocar a la función startPolling() para iniciar el polling periódico al backend:
         **/
     }
  

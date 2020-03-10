@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 /**
  * Se recomienda usar esta variable global como "base de datos" para guardar 
- * la relación entre el id de la órden y su estado actual.
+ * la relación entre una órden y su estado actual.
  * 
  * (Aclaración: En un entorno productivo se requiere almacenar esta información de una manera más confiable)
  */
