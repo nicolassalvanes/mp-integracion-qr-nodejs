@@ -26,7 +26,6 @@
                             <hr>
                             <img src="" class="border p-3" style="width: 80%;"><!--Completar src con URL de imagen de tu QR de pago-->
                             <br><br>
-                            <input hidden id="external_reference_id"></input><!--Se sugiere guardar aquí el id de la órden generada-->
                         </div>
                     </div>
                 </div>
@@ -36,38 +35,45 @@
 </div>
 
 <script>
-    // Se sugiere utilizar esta función sencilla para hacer polling al backend y actualizar el estado de la órden.
-    var pollInterval = undefined;
-    var poll = function() {
-        $.ajax({
-            url: "", //Completar endpoint de backend para obtener el estado actual de la órden
-            dataType: 'json',
-            type: 'get',
-            success: function(data) {
-                //Actualizar estado actual
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
-    };
-    function startPolling(){
-        pollInterval = setInterval( function() { poll(); }, 1000);
-        poll();
-    }
 
     function createOrder() {
         //Invocar aquí al backend para crear la orden 
 
-
-        /** Aclaración:
-            Luego de crear exitosamente una órden de pago, invocar a la función startPolling() para iniciar el polling periódico al backend:
-        **/
     }
  
     function cancelOrder() {
         //Invocar aquí al backend para cancelar la orden
 
+    }
+
+    /** Tip:
+        Se sugiere utilizar las siguientes funciones para consultar periódicamente
+        el backend y actualizar el estado de la orden en curso
+    **/
+    var pollInterval = undefined;
+
+    function startStatusPolling() {
+        pollInterval = setInterval( 
+            function() { 
+                $.ajax({
+                    url: "", //Completar con endpoint de backend y los parámetros necesarios para obtener el estado
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        //Actualizar estado actual en pantalla
+
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
+                    }
+                });
+            }, 
+            3000
+        );
+    };
+    
+    function stopStatusPolling(){
+        clearInterval(pollInterval);
     }
 
 </script>

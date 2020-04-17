@@ -16,7 +16,7 @@ router.post('/order', (req, res) => {
 });
 
 /**
- * Completar el resto de los endpoints necesarios para la integración
+ * Completar con el resto de los endpoints necesarios para la integración
  */
 
 module.exports = router;
