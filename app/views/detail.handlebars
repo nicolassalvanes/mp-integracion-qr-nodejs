@@ -35,38 +35,6 @@
 </div>
 
 <script>
-    // Polling function to display any order status update.
-    var pollInterval = undefined;
-
-    function startStatusPolling(externalReferenceId) {
-        pollInterval = setInterval( 
-            function() { 
-                $.ajax({
-                    url: "{{baseurl}}/api/status?external_reference="+externalReferenceId,
-                    dataType: 'json',
-                    type: 'get',
-                    success: function(data) {
-                        if ( data.status ) {
-                            var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
-                            document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
-                            if(data.status === 'closed') {
-                                document.getElementById('cancel_button').setAttribute('hidden', false);
-                                document.getElementById('create_button').removeAttribute('hidden');
-                                clearInterval(pollInterval);
-                            }
-                        }
-                    },
-                    error: function (data) {
-                        console.log('Error:', data);
-                    }
-                });
-            }, 
-            3000
-        );
-    };
-    function stopStatusPolling(){
-        clearInterval(pollInterval);
-    }
 
     var orderData = {
         title: "{{title}}",
@@ -112,4 +80,39 @@
             }
         });
     }
+
+    // Polling function to display any order status update.
+    var pollInterval = undefined;
+
+    function startStatusPolling(externalReferenceId) {
+        pollInterval = setInterval( 
+            function() { 
+                $.ajax({
+                    url: "{{baseurl}}/api/status?external_reference="+externalReferenceId,
+                    dataType: 'json',
+                    type: 'get',
+                    success: function(data) {
+                        if ( data.status ) {
+                            var order_status = data.status == 'unknown' ? 'QR aún no escaneado' : data.status;
+                            document.getElementById('order_status').innerHTML = 'Estado de la orden: '+order_status;
+                            if(data.status === 'closed') {
+                                document.getElementById('cancel_button').setAttribute('hidden', false);
+                                document.getElementById('create_button').removeAttribute('hidden');
+                                clearInterval(pollInterval);
+                            }
+                        }
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
+                    }
+                });
+            }, 
+            3000
+        );
+    };
+    
+    function stopStatusPolling(){
+        clearInterval(pollInterval);
+    }
+
 </script>
